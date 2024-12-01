@@ -9,7 +9,7 @@ app_license = "agpl-3.0"
 # ------------------
 
 # create the required fields in the database and add them to the form
-after_install = "moq_validation.setup.setup.setup_custom_fields"
+after_install = "tiered_pricing_moq.setup.setup.setup_custom_fields"
 
 
 # MQO validation hooks ______________________________________________________________________________________________________________
