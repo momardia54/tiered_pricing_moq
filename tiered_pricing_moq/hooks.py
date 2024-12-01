@@ -8,6 +8,9 @@ app_license = "agpl-3.0"
 # Apps
 # ------------------
 
+# create the required fields in the database and add them to the form
+after_install = "moq_validation.setup.setup.setup_custom_fields"
+
 
 # MQO validation hooks ______________________________________________________________________________________________________________
 doc_events = {
