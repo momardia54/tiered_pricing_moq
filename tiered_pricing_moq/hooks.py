@@ -8,6 +8,8 @@ app_license = "agpl-3.0"
 # Apps
 # ------------------
 
+
+# MQO validation hooks ______________________________________________________________________________________________________________
 doc_events = {
     "Quotation": {
         "before_save": "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq"
@@ -28,3 +30,7 @@ doc_events = {
         "before_save": "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq"
     }
 }
+#_____________________________________________________________________________________________________________________________________
+
+
+
