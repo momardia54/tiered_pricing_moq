@@ -10,7 +10,7 @@ def setup_custom_fields():
             "fieldname": "custom_is_tiered",
             "label": "Enable Tiered Pricing",
             "fieldtype": "Check",
-            "insert_after": "description",  # Insert after description field (adjust if needed)
+            "insert_after": "description",  # Insert after description field
             "default": 0,
             "reqd": 1,
             "in_list_view": 1,
@@ -35,7 +35,16 @@ def setup_custom_fields():
             "reqd": 1,
             "in_list_view": 1,
             "description": "The percentage reduction per tier.",
-        }
+        },
+        {
+            "fieldname": "custom_moq",  # New Field
+            "label": "Minimum Order Quantity",
+            "fieldtype": "Int",
+            "insert_after": "stock_uom",  # Insert after stock_uom
+            "default": 1,
+            "reqd": 0,
+            "description": "The minimum order quantity for this item.",
+        },
     ]
     
     # Loop through all the fields and create them if they don't exist
@@ -57,7 +66,7 @@ def setup_custom_fields():
         {
             "fieldname": "custom_flat_rate_price",
             "label": "Base Flat Rate Price",
-            "fieldtype": "Currency",  # Changed to Currency type
+            "fieldtype": "Currency",
             "insert_after": "price_list_rate",  # Adjust based on where it should appear
             "default": 0,
             "reqd": 1,
