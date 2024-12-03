@@ -42,19 +42,19 @@ doc_events = {
 # tiered pricing calcutions for all sales processes
 doc_events = {
     "Quotation": {
-        "before_save": "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing_logic"
+        "before_save": "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing"
     },
     "Sales Order": {
-        "before_save": "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing_logic"
+        "before_save": "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing"
     },
     "Sales Invoice": {
-        "before_save": "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing_logic"
+        "before_save": "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing"
     },
     "Delivery Note": {
-        "before_save": "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing_logic"
+        "before_save": "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing"
     },
     "Sales Receipt": {
-        "before_save": "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing_logic"
+        "before_save": "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing"
     }
 }
 
