@@ -1,3 +1,6 @@
+import frappe
+from frappe import _
+
 # Server Script: Before Save for Quotation
 def apply_tiered_pricing(doc, method):
     for item in doc.items:
