@@ -24,8 +24,8 @@ def apply_tiered_pricing(doc, method):
         ) or 0  # Default to 0 if no flat rate price is defined
 
         # Fetch custom field values
-        tier_size = item_data.custom_tier_size or 50  # Default tier size is 50
-        reduction_rate = item_data.custom_reduction_per_tier or 8  # Default reduction is 8%
+        tier_size = item_data.custom_tier_size  # Default tier size is 50
+        reduction_rate = item_data.custom_reduction_per_tier  # Default reduction is 8%
         base_price = item.rate  # Use the item rate as the base price
 
         # Ensure reduction rate is a decimal
@@ -36,13 +36,14 @@ def apply_tiered_pricing(doc, method):
         capped_price = base_price * (1 - max_discount_rate)
 
         # Calculate total amount based on the tiered pricing logic
-        pages = item.qty or 0  # Number of units
+        pages = item.qty  # Number of units
         total_amount = 0  # Total cumulative amount
 
         if flat_rate_price > 0 and pages > 0:
             # Apply flat rate to the first 10 UOM only if flat_rate_price is defined
             if pages <= 10:
                 total_amount = flat_rate_price  # Apply flat rate for all pages if <= 10
+                pages = 0
             else:
                 total_amount += flat_rate_price  # Apply flat rate for the first 10 pages
                 pages -= 10  # Deduct the flat-rate-covered pages
