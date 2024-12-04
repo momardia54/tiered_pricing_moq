@@ -57,7 +57,7 @@ def apply_tiered_pricing(doc, method):
             pages_in_tier = min(tier_size, remaining_pages)
 
             # Calculate the discounted tier price
-            tier_price = base_price * ((1 - discount_rate) ** tier_number)
+            tier_price = base_price * (1 - (discount_rate * tier_number))
 
             # Cap the tier price to the maximum allowed discount
             tier_price = max(tier_price, capped_price)
