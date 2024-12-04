@@ -3,6 +3,10 @@ from frappe import _
 
 # Server Script: Before Save for Quotation
 def apply_tiered_pricing(doc, method):
+    # Initialize total values
+    total_amount = 0
+    total_qty = 0
+    
     for item in doc.items:
         # Fetch item data from the Item doctype
         item_data = frappe.db.get_value(
@@ -13,7 +17,9 @@ def apply_tiered_pricing(doc, method):
         )
 
         # Skip if tiered pricing is not enabled
-        if not item_data.custom_is_tiered:
+        if not item_data or not item_data.custom_is_tiered:
+            total_amount += item.amount  # Include unchanged item amount
+            total_qty += item.qty
             continue
         
         # Fetch the flat rate price from the Item Price doctype
@@ -37,15 +43,15 @@ def apply_tiered_pricing(doc, method):
 
         # Calculate total amount based on the tiered pricing logic
         pages = item.qty  # Number of units
-        total_amount = 0  # Total cumulative amount
+        item_total = 0  # Item's cumulative amount
 
         if flat_rate_price > 0 and pages > 0:
             # Apply flat rate to the first 10 UOM only if flat_rate_price is defined
             if pages <= 10:
-                total_amount = flat_rate_price  # Apply flat rate for all pages if <= 10
+                item_total = flat_rate_price  # Apply flat rate for all pages if <= 10
                 pages = 0
             else:
-                total_amount += flat_rate_price  # Apply flat rate for the first 10 pages
+                item_total += flat_rate_price  # Apply flat rate for the first 10 pages
                 pages -= 10  # Deduct the flat-rate-covered pages
 
         # Calculate pricing for remaining UOM beyond the first 10
@@ -63,12 +69,22 @@ def apply_tiered_pricing(doc, method):
             tier_price = max(tier_price, capped_price)
 
             # Add the price for the current tier
-            total_amount += tier_price * pages_in_tier
+            item_total += tier_price * pages_in_tier
 
             # Move to the next tier
             remaining_pages -= pages_in_tier
             tier_number += 1
 
         # Update the item's rate and amount fields
-        item.rate = total_amount / (item.qty or 1)  # Avoid division by zero
-        item.amount = total_amount
+        item.rate = item_total / (item.qty or 1)  # Avoid division by zero
+        item.amount = item_total
+
+        # Add the updated item's amount and quantity to the totals
+        total_amount += item.amount
+        total_qty += item.qty
+
+    # Update the parent document's total and other relevant fields
+    doc.set("total", total_amount)
+    doc.set("grand_total", total_amount + doc.total_taxes_and_charges)  # Include taxes
+    doc.set("net_total", total_amount)
+    doc.set("total_qty", total_qty)
