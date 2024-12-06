@@ -11,5 +11,5 @@ def validate_moq(doc, method):
         uom = item_details.stock_uom or "units"  # Default UOM if stock_uom is empty
         
         # Check if the item's quantity is below the minimum
-        if min_qty and item.qty < float(min_qty):
+        if min_qty <= item.qty:
             frappe.throw(f"The minimum order quantity for {item.item_code} is {min_qty} {uom}. Please adjust the quantity.")
