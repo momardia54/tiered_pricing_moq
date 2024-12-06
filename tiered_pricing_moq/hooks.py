@@ -16,34 +16,49 @@ doc_events = {
     "Quotation": {
         "before_save": [
             "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
-            "tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+            "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
         ]
     },
     "Sales Order": {
         "before_save": [
             "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
-            "tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+            "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
         ]
     },
     "Purchase Order": {
-        "before_save": "tiered_pricing_moq.moq_validation_script.validate_moq",
+        "before_save": [
+            "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
+            "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+        ]
     },
     "Blanket Order": {
-        "before_save": "tiered_pricing_moq.moq_validation_script.validate_moq",
+        "before_save": [
+            "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
+            "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+        ]
     },
     "Delivery Note": {
         "before_save": [
             "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
-            "tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+            "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
         ]
     },
     "Purchase Receipt": {
-        "before_save": "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
+        "before_save": [
+            "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
+            "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+        ]
     },
     "Sales Invoice": {
-        "before_save": "tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+        "before_save": [
+            "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
+            "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+        ]
     },
     "Sales Receipt": {
-        "before_save": "tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+        "before_save": [
+            "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
+            "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+        ]
     },
 }
