@@ -7,7 +7,7 @@ app_license = "AGPL-3.0"
 
 # Hooks for after installation
 # ----------------------------
-after_install = "tiered_pricing_moq.setup.setup_custom_fields"
+after_install = "tiered_pricing_moq.setup.setup.setup_custom_fields"
 
 # Document Events
 # ----------------------------
