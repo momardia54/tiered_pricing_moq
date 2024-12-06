@@ -2,14 +2,21 @@ import frappe
 from frappe import _
 
 def validate_moq(doc, method):
+    """
+    Validate if all items in the Quotation have a quantity >= MOQ.
+    """
+    # Check if there are items in the document
+    if not doc.items:
+        return  # Do nothing if there are no items
+
     for item in doc.items:
-    # Fetch the Minimum Order Quantity and UOM from the Item Master
-    item_details = frappe.db.get_value("Item", item.item_code, ["custom_moq", "stock_uom"], as_dict=True)
-    
-    if item_details:
-        min_qty = item_details.custom_moq
-        uom = item_details.stock_uom or "units"  # Default UOM if stock_uom is empty
-        
-        # Check if the item's quantity is below the minimum
-        if min_qty <= item.qty:
-            frappe.throw(f"The minimum order quantity for {item.item_code} is {min_qty} {uom}. Please adjust the quantity.")
+        # Fetch the item's custom MOQ value
+        custom_moq = frappe.db.get_value("Item", item.item_code, "custom_moq")
+
+        # Check if the quantity is less than the MOQ
+        if custom_moq and item.qty < custom_moq:
+            frappe.throw(
+                _("Item {0} has a quantity ({1}) less than the MOQ ({2}).").format(
+                    item.item_code, item.qty, custom_moq
+                )
+            )
