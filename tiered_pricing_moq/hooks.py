@@ -14,7 +14,10 @@ after_install = "tiered_pricing_moq.setup.setup.setup_custom_fields"
 doc_events = {
     # MOQ validation hooks and tiered pricing calculation
     "Quotation": {
-        "before_save": "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
+        "before_save": [
+            "tiered_pricing_moq.tiered_pricing_moq.moq_validation_script.validate_moq",
+            "tiered_pricing_moq.tiered_pricing_moq.tiered_pricing_calculation.apply_tiered_pricing",
+        ]
     },
     "Sales Order": {
         "before_save": [
