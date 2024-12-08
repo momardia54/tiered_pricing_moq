@@ -6,7 +6,7 @@ def apply_tiered_pricing(doc, method):
     # Initialize total values
     total_amount = 0
     total_qty = 0
-
+    
     for item in doc.items:
         # Fetch item data from the Item doctype
         item_data = frappe.db.get_value(
@@ -21,7 +21,7 @@ def apply_tiered_pricing(doc, method):
             total_amount += item.amount  # Include unchanged item amount
             total_qty += item.qty
             continue
-
+        
         # Fetch the flat rate price from the Item Price doctype
         flat_rate_price = frappe.db.get_value(
             "Item Price",
@@ -30,9 +30,9 @@ def apply_tiered_pricing(doc, method):
         ) or 0  # Default to 0 if no flat rate price is defined
 
         # Fetch custom field values
-        tier_size = item_data.custom_tier_size
-        reduction_rate = item_data.custom_reduction_per_tier
-        base_price = item.rate  # Use the original rate for calculations
+        tier_size = item_data.custom_tier_size  # Default tier size is 50
+        reduction_rate = item_data.custom_reduction_per_tier  # Default reduction is 8%
+        base_price = item.rate  # Use the item rate as the base price
 
         # Ensure reduction rate is a decimal
         discount_rate = reduction_rate / 100.0
@@ -75,7 +75,8 @@ def apply_tiered_pricing(doc, method):
             remaining_pages -= pages_in_tier
             tier_number += 1
 
-        # Update the item's amount field only
+        # Update the item's rate and amount fields
+        item.rate = item_total / (item.qty or 1)  # Avoid division by zero
         item.amount = item_total
 
         # Add the updated item's amount and quantity to the totals
@@ -83,9 +84,7 @@ def apply_tiered_pricing(doc, method):
         total_qty += item.qty
 
     # Update the parent document's total and other relevant fields
-    doc.total = total_amount
-    doc.net_total = total_amount
-    doc.total_qty = total_qty
-
-    # Trigger recalculation of taxes and grand total
-    doc.run_method("calculate_taxes_and_totals")
+    doc.set("total", total_amount)
+    doc.set("grand_total", total_amount + doc.total_taxes_and_charges)  # Include taxes
+    doc.set("net_total", total_amount)
+    doc.set("total_qty", total_qty)
