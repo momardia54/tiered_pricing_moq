@@ -30,9 +30,9 @@ def apply_tiered_pricing(doc, method):
         ) or 0  # Default to 0 if no flat rate price is defined
 
         # Fetch custom field values
-        tier_size = item_data.custom_tier_size  # Default tier size is 50
-        reduction_rate = item_data.custom_reduction_per_tier  # Default reduction is 8%
-        base_price = item.rate  # Use the item rate as the base price
+        tier_size = item_data.custom_tier_size
+        reduction_rate = item_data.custom_reduction_per_tier
+        base_price = item.rate  # Use the original rate for calculations
 
         # Ensure reduction rate is a decimal
         discount_rate = reduction_rate / 100.0
@@ -75,8 +75,7 @@ def apply_tiered_pricing(doc, method):
             remaining_pages -= pages_in_tier
             tier_number += 1
 
-        # Update the item's rate and amount fields
-        item.rate = item_total / (item.qty or 1)  # Avoid division by zero
+        # Update the item's amount field only
         item.amount = item_total
 
         # Add the updated item's amount and quantity to the totals
