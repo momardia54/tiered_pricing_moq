@@ -6,7 +6,7 @@ def apply_tiered_pricing(doc, method):
     # Initialize total values
     total_amount = 0
     total_qty = 0
-    
+
     for item in doc.items:
         # Fetch item data from the Item doctype
         item_data = frappe.db.get_value(
@@ -21,7 +21,7 @@ def apply_tiered_pricing(doc, method):
             total_amount += item.amount  # Include unchanged item amount
             total_qty += item.qty
             continue
-        
+
         # Fetch the flat rate price from the Item Price doctype
         flat_rate_price = frappe.db.get_value(
             "Item Price",
@@ -83,8 +83,5 @@ def apply_tiered_pricing(doc, method):
         total_amount += item.amount
         total_qty += item.qty
 
-    # Update the parent document's total and other relevant fields
-    doc.set("total", total_amount)
-    doc.set("grand_total", total_amount + doc.total_taxes_and_charges)  # Include taxes
-    doc.set("net_total", total_amount)
-    doc.set("total_qty", total_qty)
+    # Trigger recalculation of taxes and grand total
+    doc.run_method("calculate_taxes_and_totals")
