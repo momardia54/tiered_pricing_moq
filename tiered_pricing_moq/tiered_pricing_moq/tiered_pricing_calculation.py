@@ -56,7 +56,7 @@ def apply_tiered_pricing(doc, method):
 
         if flat_rate_price > 0 and pages > 0:
             # Apply flat rate to the first 10 UOM only if flat_rate_price is defined
-            if pages <= 10:
+            if pages <= 10 :
                 item_total = flat_rate_price  # Apply flat rate for all pages if <= 10
                 pages = 0
             else:
