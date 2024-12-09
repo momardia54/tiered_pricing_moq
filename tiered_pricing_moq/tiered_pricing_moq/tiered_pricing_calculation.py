@@ -92,6 +92,12 @@ def apply_tiered_pricing(doc, method):
         total_amount += item.amount
         total_qty += item.qty
 
+    # Update the parent document's total and other relevant fields
+    doc.set("total", total_amount)
+    doc.set("grand_total", total_amount + doc.total_taxes_and_charges) # Include taxes
+    doc.set("net_total", total_amount)
+    doc.set("total_qty", total_qty)
+
     # Trigger recalculation of taxes and grand total
     doc.run_method("calculate_taxes_and_totals")
 
