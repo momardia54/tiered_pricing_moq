@@ -66,7 +66,7 @@ def apply_tiered_pricing(doc, method):
         # Calculate pricing for remaining UOM beyond the first 10
         remaining_pages = max(0, pages)
 
-        tier_number = 1
+        tier_number = 0
         while remaining_pages > 0:
             # Calculate pages in the current tier
             pages_in_tier = min(tier_size, remaining_pages)
