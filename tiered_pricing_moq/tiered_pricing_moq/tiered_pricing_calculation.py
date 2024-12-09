@@ -32,7 +32,16 @@ def apply_tiered_pricing(doc, method):
         # Fetch custom field values
         tier_size = item_data.custom_tier_size  # Default tier size is 50
         reduction_rate = item_data.custom_reduction_per_tier  # Default reduction is 8%
-        base_price = item.rate  # Use the item rate as the base price
+
+        # Fetch the actual price from the Item Price doctype (dynamic lookup)
+        base_price = frappe.db.get_value(
+            "Item Price",
+            {"item_code": item.item_code, "selling": 1},  # Adjust query for buying if needed
+            "price_list_rate"
+        )
+
+        if not base_price:
+            frappe.throw(_("Base price not found for item {0}.").format(item.item_code))
 
         # Ensure reduction rate is a decimal
         discount_rate = reduction_rate / 100.0
@@ -85,3 +94,4 @@ def apply_tiered_pricing(doc, method):
 
     # Trigger recalculation of taxes and grand total
     doc.run_method("calculate_taxes_and_totals")
+
