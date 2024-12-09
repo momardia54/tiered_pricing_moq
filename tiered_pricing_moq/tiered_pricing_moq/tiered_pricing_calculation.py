@@ -3,10 +3,6 @@ from frappe import _
 
 # Server Script: Before Save for Quotation
 def apply_tiered_pricing(doc, method):
-    # Initialize total values
-    total_amount = 0
-    total_qty = 0
-
     for item in doc.items:
         # Fetch item data from the Item doctype
         item_data = frappe.db.get_value(
@@ -18,8 +14,6 @@ def apply_tiered_pricing(doc, method):
 
         # Skip if tiered pricing is not enabled
         if not item_data or not item_data.custom_is_tiered:
-            total_amount += item.amount  # Include unchanged item amount
-            total_qty += item.qty
             continue
 
         # Fetch the flat rate price from the Item Price doctype
@@ -27,16 +21,16 @@ def apply_tiered_pricing(doc, method):
             "Item Price",
             {"item_code": item.item_code, "selling": 1},  # Adjust query for buying if needed
             "custom_flat_rate_price"
-        ) or 0  # Default to 0 if no flat rate price is defined
+        ) or 0
 
         # Fetch custom field values
-        tier_size = item_data.custom_tier_size  # Default tier size is 50
-        reduction_rate = item_data.custom_reduction_per_tier  # Default reduction is 8%
+        tier_size = item_data.custom_tier_size
+        reduction_rate = item_data.custom_reduction_per_tier
 
-        # Fetch the actual price from the Item Price doctype (dynamic lookup)
+        # Fetch the base price
         base_price = frappe.db.get_value(
             "Item Price",
-            {"item_code": item.item_code, "selling": 1},  # Adjust query for buying if needed
+            {"item_code": item.item_code, "selling": 1},
             "price_list_rate"
         )
 
@@ -51,53 +45,31 @@ def apply_tiered_pricing(doc, method):
         capped_price = base_price * (1 - max_discount_rate)
 
         # Calculate total amount based on the tiered pricing logic
-        pages = item.qty  # Number of units
-        item_total = 0  # Item's cumulative amount
+        pages = item.qty
+        item_total = 0
 
         if flat_rate_price > 0 and pages > 0:
-            # Apply flat rate to the first 10 UOM only if flat_rate_price is defined
-            if pages <= 10 :
-                item_total = flat_rate_price  # Apply flat rate for all pages if <= 10
+            if pages <= 10:
+                item_total = flat_rate_price
                 pages = 0
             else:
-                item_total += flat_rate_price  # Apply flat rate for the first 10 pages
-                pages -= 10  # Deduct the flat-rate-covered pages
+                item_total += flat_rate_price
+                pages -= 10
 
         # Calculate pricing for remaining UOM beyond the first 10
         remaining_pages = max(0, pages)
 
         tier_number = 0
         while remaining_pages > 0:
-            # Calculate pages in the current tier
             pages_in_tier = min(tier_size, remaining_pages)
-
-            # Calculate the discounted tier price
             tier_price = base_price * (1 - (discount_rate * tier_number))
-
-            # Cap the tier price to the maximum allowed discount
             tier_price = max(tier_price, capped_price)
-
-            # Add the price for the current tier
             item_total += tier_price * pages_in_tier
-
-            # Move to the next tier
             remaining_pages -= pages_in_tier
             tier_number += 1
 
-        # Update the item's rate and amount fields
-        item.rate = item_total / (item.qty or 1)  # Avoid division by zero
-        item.amount = item_total
+        # Set the rate and rely on ERPNext for amount calculation
+        item.rate = round(item_total / (item.qty or 1))
 
-        # Add the updated item's amount and quantity to the totals
-        total_amount += item.amount
-        total_qty += item.qty
-
-    # Update the parent document's total and other relevant fields
-    doc.set("total", total_amount)
-    doc.set("grand_total", total_amount + doc.total_taxes_and_charges) # Include taxes
-    doc.set("net_total", total_amount)
-    doc.set("total_qty", total_qty)
-
-    # Trigger recalculation of taxes and grand total
+    # Trigger recalculation of taxes and totals
     doc.run_method("calculate_taxes_and_totals")
-
